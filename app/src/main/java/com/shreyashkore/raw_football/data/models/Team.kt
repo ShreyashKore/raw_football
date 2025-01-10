@@ -14,7 +14,9 @@ data class Team(
     val ta: String,
     @SerialName("tc")
     val city: String,
-    val name: String,
+    @SerialName("s")
+    val score: String? = null,
+    val name: String? = null,
 )
 
 @Serializable
@@ -22,11 +24,11 @@ data class Team(
 data class TeamDetails(
     val tid: String,
     @SerialName("re")
-    val record: String,
+    val record: String? = null,
     val ta: String,
     @SerialName("tc")
     val city: String,
-    val name: String,
+    val name: String? = null,
     val logo: String,
     val color: String,
 )

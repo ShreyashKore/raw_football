@@ -8,7 +8,8 @@ import kotlinx.serialization.Serializable
 @Keep
 data class MatchSchedule(
     val uid: String,
-    val year: String,
+    val year: Int,
+    val st: Int,
     @SerialName("h")
     val homeTeam: Team,
     @SerialName("v")
@@ -17,4 +18,18 @@ data class MatchSchedule(
     val arenaName: String,
     @SerialName("arena_city")
     val arenaCity: String,
+    val gametime: String,
 )
+
+val MatchSchedule.status: GameStatus
+    get() {
+        return when (st) {
+            1 -> GameStatus.Future
+            2 -> GameStatus.Live
+            else -> GameStatus.Past
+        }
+    }
+
+enum class GameStatus {
+    Future, Live, Past
+}
