@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,20 +32,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.shreyashkore.raw_football.data.models.GameStatus
-import com.shreyashkore.raw_football.data.models.MatchSchedule
-import com.shreyashkore.raw_football.data.models.TeamDetails
 import com.shreyashkore.raw_football.data.models.status
+import com.shreyashkore.raw_football.domain.MatchScheduleDetails
 import com.shreyashkore.raw_football.format
 import com.shreyashkore.raw_football.toLocal
 import java.time.Instant
 import java.time.Month
 
+/**
+ * Main screen of the app.
+ * Displays the list of games.
+ */
 @Composable
 fun ScheduleScreen(
     viewModel: SchedulesViewModel
 ) {
     ScheduleScreen(
-        appTeam = "1610612748",
+        appTeam = "1610612748", // hardcoded
         isLoading = viewModel.isLoading.collectAsState(false).value,
 //        schedules = viewModel.scheduleDetails.collectAsState(emptyList()).value,
         schedulesByMonth = viewModel.scheduleDetailsByMonth.collectAsState(emptyMap()).value
@@ -84,7 +88,8 @@ fun ScheduleScreen(
     }) { innerPadding ->
         Column(
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(innerPadding)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
 
             if (isLoading) {
@@ -127,9 +132,6 @@ fun ScheduleScreen(
     }
 }
 
-data class MatchScheduleDetails(
-    val schedule: MatchSchedule, val homeTeam: TeamDetails, val visitingTeam: TeamDetails
-)
 
 @Composable
 fun ScheduleCard(

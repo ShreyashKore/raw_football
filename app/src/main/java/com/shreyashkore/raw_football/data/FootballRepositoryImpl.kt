@@ -7,9 +7,11 @@ import com.shreyashkore.raw_football.data.models.MatchSchedulesData
 import com.shreyashkore.raw_football.data.models.TeamDetails
 import com.shreyashkore.raw_football.data.models.TeamsData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import kotlin.time.Duration.Companion.seconds
 
 class FootballRepositoryImpl(
     private val assetManager: AssetManager,
@@ -18,6 +20,7 @@ class FootballRepositoryImpl(
 
 
     override suspend fun getSchedules(): List<MatchSchedule> = withContext(Dispatchers.IO) {
+        delay(1.seconds) // Simulate network delay
         val fileContent = assetManager.open("Schedule.json").use {
             json.decodeFromStream<FileContent<MatchSchedulesData>>(it)
         }

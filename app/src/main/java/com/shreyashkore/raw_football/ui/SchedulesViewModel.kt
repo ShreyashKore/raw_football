@@ -8,6 +8,7 @@ import com.shreyashkore.raw_football.data.FootballRepository
 import com.shreyashkore.raw_football.data.FootballRepositoryImpl
 import com.shreyashkore.raw_football.data.models.MatchSchedule
 import com.shreyashkore.raw_football.data.models.TeamDetails
+import com.shreyashkore.raw_football.domain.MatchScheduleDetails
 import com.shreyashkore.raw_football.format
 import com.shreyashkore.raw_football.toLocal
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,9 +42,9 @@ class SchedulesViewModel(
     }
 
     fun fillScheduleDetails() = viewModelScope.launch {
+        _isLoading.update { true }
         schedules = repository.getSchedules()
         teams = repository.getTeams().associateBy { it.tid }
-        _isLoading.update { true }
         _scheduleDetails.update {
             schedules.map { schedule ->
                 val homeTeam = teams[schedule.homeTeam.tid]!!
