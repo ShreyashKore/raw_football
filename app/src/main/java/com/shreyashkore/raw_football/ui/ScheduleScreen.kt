@@ -1,6 +1,5 @@
 package com.shreyashkore.raw_football.ui
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,7 @@ fun ScheduleScreen(
     ScheduleScreen(
         appTeam = "1610612748",
         isLoading = viewModel.isLoading.collectAsState(false).value,
-        schedules = viewModel.scheduleDetails.collectAsState(emptyList()).value,
+//        schedules = viewModel.scheduleDetails.collectAsState(emptyList()).value,
         schedulesByMonth = viewModel.scheduleDetailsByMonth.collectAsState(emptyMap()).value
     )
 }
@@ -55,9 +56,29 @@ fun ScheduleScreen(
 fun ScheduleScreen(
     appTeam: String,
     isLoading: Boolean,
-    schedules: List<MatchScheduleDetails>,
+//    schedules: List<MatchScheduleDetails>,
     schedulesByMonth: Map<Pair<Month, Int>, List<MatchScheduleDetails>>
 ) {
+    val listState = rememberLazyListState()
+
+    // Autoscroll to current month
+    LaunchedEffect(schedulesByMonth) {
+        val today = Instant.now().toLocal()
+        var todaysGameIndex = 0
+        for ((monthYear, schedules) in schedulesByMonth) {
+            todaysGameIndex++ // adding the sticky header index
+            val (month, year) = monthYear
+            if (today.year == year && today.month == month) {
+                // found the current month
+                break
+            } else {
+                todaysGameIndex += schedules.size // adding all items index
+            }
+        }
+
+        listState.scrollToItem(todaysGameIndex)
+    }
+
     Scaffold(topBar = {
         CenterAlignedTopAppBar(title = { Text(text = "Games") })
     }) { innerPadding ->
@@ -73,7 +94,8 @@ fun ScheduleScreen(
             }
 
             LazyColumn(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                state = listState
             ) {
                 schedulesByMonth.entries.map {
                     val (month, year) = it.key
@@ -83,9 +105,11 @@ fun ScheduleScreen(
                         Text(
                             text = "$month $year",
                             fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.fillMaxWidth().background(
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                ),
                             textAlign = TextAlign.Center,
                         )
                     }
